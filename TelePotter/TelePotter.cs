@@ -9,12 +9,17 @@ namespace TelePotter
     [BepInPlugin("emphasia.mod.dsp.TelePotter", "TelePotter", "1.0.0")]
     public class TelePotter : BaseUnityPlugin
     {
+        static TelePotter self;  // this
         internal static BepInEx.Logging.ManualLogSource Logger;
+
+        private static object target = null;
+        private static bool ready = false;
 
         private void Start()
         {
             // Harmony.CreateAndPatchAll(typeof(TelePotter));
             new Harmony("emphasia.mod.dsp.TelePotter").PatchAll();
+            self = this;
             Logger = base.Logger;
             Logger.LogInfo("INIT.");
         }
@@ -24,20 +29,9 @@ namespace TelePotter
             if (ready && target != null)
             {
                 Logger.LogInfo("READY.");
-                UIStarmap starmap = UIRoot.instance.uiGame.starmap;
-                if (target is UIStarmapPlanet)
-                {
-                    starmap.focusPlanet = (UIStarmapPlanet)target;
-                    target = ((UIStarmapPlanet)target).planet;
-                }
-                else if (target is UIStarmapStar)
-                {
-                    starmap.focusStar = (UIStarmapStar)target;
-                    target = ((UIStarmapStar)target).star;
-                }
                 Teleport(target);
                 // GameMain.mainPlayer.movementState = EMovementState.Sail;
-                starmap.OnCursorFunction2Click(0);  // re_focus
+                // starmap.OnCursorFunction2Click(0);  // re_focus
                 Logger.LogInfo("ARRIVED.");
                 ready = false;
             }
@@ -79,13 +73,13 @@ namespace TelePotter
             yield return new WaitForEndOfFrame();
             if (target is PlanetData)
             {
-                GameMain.mainPlayer.uPosition = ((PlanetData)target).uPosition + VectorLF3.unit_z * (double)((PlanetData)target).realRadius;
+                GameMain.mainPlayer.uPosition = ((PlanetData)target).uPosition + VectorLF3.unit_z * ((PlanetData)target).realRadius;
             }
             else
             {
                 if (target is StarData)
                 {
-                    GameMain.mainPlayer.uPosition = ((StarData)target).uPosition + VectorLF3.unit_z * (double)((StarData)target).physicsRadius;
+                    GameMain.mainPlayer.uPosition = ((StarData)target).uPosition + VectorLF3.unit_z * ((StarData)target).physicsRadius;
                 }
                 else
                 {
@@ -114,20 +108,21 @@ namespace TelePotter
         {
             private static bool Prefix(UIStarmap __instance, int obj)
             {
+			    GameMain.mainPlayer.navigation.indicatorAstroId = 0;
                 if (__instance.focusPlanet != null)
                 {
-                    target = __instance.focusPlanet;
+                    target = __instance.focusPlanet.planet.id;
                 }
                 else if (__instance.focusStar != null)
                 {
-                    target = __instance.focusStar;
+                    target = __instance.focusStar.star.id * 100;
                 }
+                if (!((int)target>0) || (GameMain.mainPlayer.planetData != null && GameMain.mainPlayer.planetData.id == (int)target)) return true;
+                // self.Teleport(target);
                 ready = true;
+                UIRoot.instance.uiGame.starmap.OnCursorFunction2Click(0);  // re_focus
                 return false;
             }
         }
-
-        private static object target = null;
-        private static bool ready = false;
     }
 }
