@@ -11,9 +11,10 @@ namespace TelePotter
     {
         static TelePotter self;  // this
         internal static BepInEx.Logging.ManualLogSource Logger;
-
-        private static object target = null;
-        private static bool ready = false;
+        public enum TelePotterState { idle, tasking, loading, ready, crossing, arrived, failed };
+        public static TelePotterState state = TelePotterState.idle;
+        public static int target = 0;
+        private static int num = 0;
 
         private void Start()
         {
@@ -21,94 +22,238 @@ namespace TelePotter
             new Harmony("emphasia.mod.dsp.TelePotter").PatchAll();
             self = this;
             Logger = base.Logger;
+            state = TelePotterState.idle;
             Logger.LogInfo("INIT.");
         }
 
-        private void Update()
+        private void LateUpdate()
         {
-            if (ready && target != null)
+            if (target <= 0 && state != TelePotterState.idle)
             {
-                Logger.LogInfo("READY.");
-                Teleport(target);
-                // GameMain.mainPlayer.movementState = EMovementState.Sail;
-                // starmap.OnCursorFunction2Click(0);  // re_focus
-                Logger.LogInfo("ARRIVED.");
-                ready = false;
+                Logger.LogInfo("State : IDLE  [target !> 0]");
+                state = TelePotterState.idle;
+            }
+            if (state == TelePotterState.tasking)
+            {
+                Logger.LogDebug("State : TASKING");
+                UIRoot.instance.uiGame.buildMenu.SetCurrentCategory(0);
+                GameMain.mainPlayer.movementState = EMovementState.Fly;
+                OpenPortal(target);
+                num = 5000;
+                state = TelePotterState.loading;
+            }
+            else if (state == TelePotterState.loading)
+            {
+                if (num%50==0)
+                    Logger.LogDebug("State : LOADING" + " --- " + (5000-num));
+                bool? loaded = DeterminePortal(target);
+                if (loaded == null)
+                {
+                    Logger.LogInfo("State : FAILED");
+                    state = TelePotterState.ready;
+                }
+                else if ((bool)loaded)
+                {
+                    state = TelePotterState.ready;
+                }
+            }
+            if (state == TelePotterState.ready)
+            {
+                Logger.LogDebug("State : READY");
+                base.StartCoroutine(TeleportPlayer(target));
+                num = 5;
+                state = TelePotterState.crossing;
+            }
+            else if (state == TelePotterState.crossing)
+            {
+                Logger.LogDebug("State : CROSSING");
+                bool? arrived = DetermineArrival(target);
+                if (arrived == null)
+                {
+                    state = TelePotterState.failed;
+                }
+                else if ((bool)arrived)
+                {
+                    state = TelePotterState.arrived;
+                }
+            }
+            if (state == TelePotterState.arrived)
+            {
+                Logger.LogInfo("State : ARRIVED");
+                //GameMain.mainPlayer.navigation.Arrive();
+                //GameMain.mainPlayer.movementState = EMovementState.Fly;
+                OnArrive(target);
+                state = TelePotterState.idle;
+                Logger.LogDebug($"ARRIVED: TARGET={target}");
+            }
+            else if (state == TelePotterState.failed)
+            {
+                Logger.LogInfo("State : FAILED");
+                state = TelePotterState.idle;
             }
         }
 
-        private void Teleport(object target)
+        private void OpenPortal(object target)
+        {
+            if (target is int)
+            {
+                if ((int)target % 100 == 0)
+                {
+                    Logger.LogInfo("Target.type ----- Star");
+                    target = GameMain.galaxy.StarById((int)target / 100);
+                }
+                else
+                {
+                    Logger.LogInfo("Target.type ----- Planet");
+                    target = GameMain.galaxy.PlanetById((int)target);
+                }
+            }
+            if (target is PlanetData)
+            {
+                GameMain.data.ArriveStar(((PlanetData)target).star);
+            }
+            else if (target is StarData)
+            {
+                GameMain.data.ArriveStar((StarData)target);
+            }
+        }
+
+        private bool? DeterminePortal(object target)
+        {
+            if (num > 0)
+            {
+                num--;
+                if (target is int)
+                {
+                    if ((int)target % 100 == 0)
+                    {
+                        target = GameMain.galaxy.StarById((int)target / 100);
+                    }
+                    else
+                    {
+                        target = GameMain.galaxy.PlanetById((int)target);
+                    }
+                }
+                if (target is PlanetData)
+                {
+                    return ((PlanetData)target).star.loaded;
+                }
+                else if (target is StarData)
+                {
+                    return ((StarData)target).loaded;
+                }
+            }
+            return null;
+        }
+
+        private IEnumerator TeleportPlayer(object target)
+        {
+            yield return new WaitForEndOfFrame();
+            if (target is int)
+            {
+                if ((int)target % 100 == 0)
+                {
+                    target = GameMain.galaxy.StarById((int)target / 100);
+                }
+                else
+                {
+                    target = GameMain.galaxy.PlanetById((int)target);
+                }
+            }
+            if (target is PlanetData)
+            {
+                Logger.LogDebug($"Target.type ----- {((PlanetData)target).type}.");
+                // GameMain.mainPlayer.navigation.Navigate(((PlanetData)target).id, ((PlanetData)target).uPosition);
+                if (((PlanetData)target).type != EPlanetType.Gas)
+                {
+                    GameMain.mainPlayer.uPosition = ((PlanetData)target).uPosition + VectorLF3.unit_z * ((PlanetData)target).realRadius;
+                }
+                else
+                {
+                    GameMain.mainPlayer.uPosition = ((PlanetData)target).uPosition + VectorLF3.unit_z * (((PlanetData)target).realRadius + 20f);
+                }
+                GameMain.data.ArrivePlanet((PlanetData)target);
+            }
+            else if (target is StarData)
+            {
+                GameMain.mainPlayer.uPosition = ((StarData)target).uPosition + VectorLF3.unit_z * (((StarData)target).physicsRadius + 80f);
+            }
+            else if (target is VectorLF3)
+            {
+                GameMain.mainPlayer.uPosition = (VectorLF3)target;
+            }
+            GameMain.data.DetermineRelative();
+            yield break;
+        }
+
+        private bool? DetermineArrival(object target)
+        {
+            if (num > 0)
+            {
+                num--;
+                if (target is int)
+                {
+                    if ((int)target % 100 == 0)
+                    {
+                        target = GameMain.galaxy.StarById((int)target / 100);
+                    }
+                    else
+                    {
+                        target = GameMain.galaxy.PlanetById((int)target);
+                    }
+                }
+                if (target is PlanetData)
+                {
+                    return (GameMain.mainPlayer.movementState < EMovementState.Sail && GameMain.data.localPlanet != null && GameMain.data.localPlanet.id == ((PlanetData)target).id);
+                }
+                else if (target is StarData)
+                {
+                    return (GameMain.data.localStar != null && GameMain.data.localStar.id == ((StarData)target).id);
+                }
+            }
+            return null;
+        }
+
+        private void OnArrive(object target)
         {
             if (target is int)
             {
                 if ((int)target % 100 == 0)
                 {
                     target = GameMain.galaxy.StarById((int)target / 100);
-                    Logger.LogInfo("Teleport.StarById.");
                 }
                 else
                 {
                     target = GameMain.galaxy.PlanetById((int)target);
-                    Logger.LogInfo("Teleport.PlanetById.");
                 }
             }
+            GameMain.mainPlayer.transform.localScale = Vector3.one;
+            GameMain.mainPlayer.uVelocity = VectorLF3.zero;
+            GameMain.mainPlayer.controller.velocityOnLanding = Vector3.zero;
             if (target is PlanetData)
             {
-                GameMain.data.ArriveStar(((PlanetData)target).star);
-                Logger.LogInfo("Teleport.ArriveStar.PlanetData.");
-            }
-            else
-            {
-                if (target is StarData)
+                if (((PlanetData)target).type != EPlanetType.Gas)
                 {
-                    GameMain.data.ArriveStar((StarData)target);
-                    Logger.LogInfo("Teleport.ArriveStar.StarData.");
+                    GameMain.data.InitLandingPlace();
                 }
+                GameMain.mainPlayer.controller.movementStateInFrame = EMovementState.Fly;
+                GameMain.mainPlayer.controller.actionFly.targetAltitude = 20f;
             }
-            base.StartCoroutine(SendPlayer(target));
+            else if (target is StarData)
+            {
+                GameMain.mainPlayer.controller.movementStateInFrame = EMovementState.Sail;
+                GameMain.mainPlayer.controller.actionSail.ResetSailState();
+                GameCamera.instance.SyncForSailMode();
+                GameMain.gameScenario.NotifyOnSailModeEnter();
+            }
         }
 
-        private IEnumerator SendPlayer(object target)
-        {
-            yield return new WaitForEndOfFrame();
-            if (target is PlanetData)
-            {
-                GameMain.mainPlayer.uPosition = ((PlanetData)target).uPosition + VectorLF3.unit_z * ((PlanetData)target).realRadius;
-            }
-            else
-            {
-                if (target is StarData)
-                {
-                    GameMain.mainPlayer.uPosition = ((StarData)target).uPosition + VectorLF3.unit_z * ((StarData)target).physicsRadius;
-                }
-                else
-                {
-                    if (target is VectorLF3)
-                    {
-                        GameMain.mainPlayer.uPosition = (VectorLF3)target;
-                    }
-                    else
-                    {
-                        if (target is string && (string)target == "resize")
-                        {
-                            GameMain.mainPlayer.transform.localScale = Vector3.one;
-                        }
-                    }
-                }
-            }
-            if (!(target is string) || (string)target != "resize")
-            {
-                base.StartCoroutine(SendPlayer("resize"));
-            }
-            yield break;
-        }
 
         [HarmonyPatch(typeof(UIStarmap), "OnCursorFunction3Click")]
         private class UIStarmap_OnCursorFunction3Click
         {
             private static bool Prefix(UIStarmap __instance, int obj)
             {
-			    GameMain.mainPlayer.navigation.indicatorAstroId = 0;
                 if (__instance.focusPlanet != null)
                 {
                     target = __instance.focusPlanet.planet.id;
@@ -117,11 +262,18 @@ namespace TelePotter
                 {
                     target = __instance.focusStar.star.id * 100;
                 }
-                if (!((int)target>0) || (GameMain.mainPlayer.planetData != null && GameMain.mainPlayer.planetData.id == (int)target)) return true;
-                // self.Teleport(target);
-                ready = true;
-                UIRoot.instance.uiGame.starmap.OnCursorFunction2Click(0);  // re_focus
-                return false;
+                if (target > 0 && (GameMain.mainPlayer.planetData == null || (GameMain.mainPlayer.planetData != null && GameMain.mainPlayer.planetData.id != target)))
+                {
+                    Logger.LogInfo($"TASK: TARGET={target}");
+                    state = TelePotterState.tasking;
+                    UIRoot.instance.uiGame.starmap.OnCursorFunction2Click(0);
+                    GameMain.mainPlayer.navigation.indicatorAstroId = 0;
+                    return false;
+                }
+                Logger.LogInfo($"ABORT: TARGET={target}");
+                target = 0;
+                state = TelePotterState.idle;
+                return true;
             }
         }
     }
