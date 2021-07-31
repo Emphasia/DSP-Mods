@@ -1,0 +1,8 @@
+{
+    "name": "TelePotter",
+    "authorName": "Emphasia",
+    "version_number": "1.0.1",
+    "website_url": "https://github.com/Emphasia/DSP-Mods",
+    "description": "一键传送：This mod provides the ability to teleport to a target planet or star with clicks on the star map.",
+    "dependencies": ["xiaoye97-BepInEx-5.4.11"]
+}
