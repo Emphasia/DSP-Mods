@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using BepInEx;
 using HarmonyLib;
@@ -23,6 +24,15 @@ namespace TelePotter
             self = this;
             Logger = base.Logger;
             state = TelePotterState.idle;
+            string text_ = "天体方位指示";
+            if (Localization.strings.Exist(text_))
+            {
+                StringProto text = Localization.strings[text_];
+                text.ENUS = "Teleport";
+                text.ZHCN = "传送";
+                Dictionary<string, int> nameIndices = Traverse.Create(Localization.strings).Field("nameIndices").GetValue() as Dictionary<string, int>;
+                Localization.strings.dataArray[nameIndices[text_]] = text;
+            }
             Logger.LogInfo("INIT.");
         }
 
