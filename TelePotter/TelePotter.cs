@@ -16,7 +16,8 @@ namespace TelePotter
         public enum TelePotterState { idle, tasking, loading, ready, crossing, arrived, failed };
         public static TelePotterState state = TelePotterState.idle;
         public static int target = 0;
-        private static int num = 0;
+        private int num = 0;
+        public Text teleportTip;
 
         private void Start()
         {
@@ -34,6 +35,11 @@ namespace TelePotter
                 Dictionary<string, int> nameIndices = Traverse.Create(Localization.strings).Field("nameIndices").GetValue() as Dictionary<string, int>;
                 Localization.strings.dataArray[nameIndices[text_]] = text;
             }
+            teleportTip = Instantiate(UIRoot.instance.uiGame.generalTips.mechaMoveTip.flyTip, UIRoot.instance.uiGame.generalTips.mechaMoveTip.flyTip.transform.parent);
+            teleportTip.name = "tp-tip";
+            teleportTip.text = (Localization.language == Language.zhCN) ? "跨恒星传送请稍候" : "Please wait while the star is loading...";
+            Destroy(teleportTip.gameObject.GetComponent<Localizer>());
+            teleportTip.gameObject.SetActive(false);
             Logger.LogInfo("INIT.");
         }
 
@@ -51,6 +57,7 @@ namespace TelePotter
                 GameMain.mainPlayer.movementState = EMovementState.Fly;
                 OpenPortal(target);
                 num = 5000;
+                teleportTip.gameObject.SetActive(true);
                 state = TelePotterState.loading;
             }
             else if (state == TelePotterState.loading)
@@ -71,6 +78,7 @@ namespace TelePotter
             if (state == TelePotterState.ready)
             {
                 Logger.LogDebug("State : READY");
+                teleportTip.gameObject.SetActive(false);
                 base.StartCoroutine(TeleportPlayer(target));
                 num = 5;
                 state = TelePotterState.crossing;
@@ -94,12 +102,14 @@ namespace TelePotter
                 //GameMain.mainPlayer.navigation.Arrive();
                 //GameMain.mainPlayer.movementState = EMovementState.Fly;
                 OnArrive(target);
+                teleportTip.gameObject.SetActive(false);
                 state = TelePotterState.idle;
                 Logger.LogDebug($"ARRIVED: TARGET={target}");
             }
             else if (state == TelePotterState.failed)
             {
                 Logger.LogInfo("State : FAILED");
+                teleportTip.gameObject.SetActive(false);
                 state = TelePotterState.idle;
             }
         }
