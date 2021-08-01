@@ -4,7 +4,7 @@ This mod provides the ability to teleport to a target planet or star with two cl
 
 Select the target in the star map to open the menu, and then click the lower left button to transmit.
 
-![guide](https://user-images.githubusercontent.com/8478234/127731453-8319d494-7d08-46f2-aa88-c9a3ef6f63bb.jpg)
+![guide](.\guide.jpg)
 
 ## Note
 
@@ -13,6 +13,11 @@ Select the target in the star map to open the menu, and then click the lower lef
 - **Teleporting across stars requires patiently waiting for few seconds**, so that the game can load the data of the target star.
 
 ## Changelog
+
+### v1.1.0
+
+-   Minor Update
+    The drones of the Mecha will be teleported along with.
 
 ### v1.0.0
 

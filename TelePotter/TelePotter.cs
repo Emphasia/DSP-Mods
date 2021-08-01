@@ -7,7 +7,7 @@ using HarmonyLib;
 
 namespace TelePotter
 {
-    [BepInPlugin("emphasia.mod.dsp.TelePotter", "TelePotter", "1.0.0")]
+    [BepInPlugin("emphasia.mod.dsp.TelePotter", "TelePotter", "1.1.0")]
     public class TelePotter : BaseUnityPlugin
     {
         static TelePotter self;  // this
