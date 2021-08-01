@@ -233,6 +233,16 @@ namespace TelePotter
                 GameCamera.instance.SyncForSailMode();
                 GameMain.gameScenario.NotifyOnSailModeEnter();
             }
+            Mecha mecha = GameMain.mainPlayer.mecha;
+            for (int i = 0; i < mecha.droneCount; i++)
+            {
+                if (mecha.drones[i].stage != 0)
+                {
+                    mecha.drones[i].Reset();
+                    mecha.drones[i].position = GameMain.mainPlayer.position;
+                }
+            }
+            mecha.droneLogic.ReloadStates();
         }
 
 
