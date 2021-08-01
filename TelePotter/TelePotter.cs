@@ -103,27 +103,32 @@ namespace TelePotter
             }
         }
 
+        private object StarOrPlanetById(int target)
+        {
+            if (target % 100 == 0)
+            {
+                return GameMain.galaxy.StarById(target / 100);
+            }
+            else
+            {
+                return GameMain.galaxy.PlanetById(target);
+            }
+        }
+
         private void OpenPortal(object target)
         {
             if (target is int)
             {
-                if ((int)target % 100 == 0)
-                {
-                    Logger.LogInfo("Target.type ----- Star");
-                    target = GameMain.galaxy.StarById((int)target / 100);
-                }
-                else
-                {
-                    Logger.LogInfo("Target.type ----- Planet");
-                    target = GameMain.galaxy.PlanetById((int)target);
-                }
+                target = StarOrPlanetById((int)target);
             }
             if (target is PlanetData)
             {
+                Logger.LogInfo("Target.type ----- Planet");
                 GameMain.data.ArriveStar(((PlanetData)target).star);
             }
             else if (target is StarData)
             {
+                Logger.LogInfo("Target.type ----- Star");
                 GameMain.data.ArriveStar((StarData)target);
             }
         }
@@ -135,14 +140,7 @@ namespace TelePotter
                 num--;
                 if (target is int)
                 {
-                    if ((int)target % 100 == 0)
-                    {
-                        target = GameMain.galaxy.StarById((int)target / 100);
-                    }
-                    else
-                    {
-                        target = GameMain.galaxy.PlanetById((int)target);
-                    }
+                    target = StarOrPlanetById((int)target);
                 }
                 if (target is PlanetData)
                 {
@@ -161,14 +159,7 @@ namespace TelePotter
             yield return new WaitForEndOfFrame();
             if (target is int)
             {
-                if ((int)target % 100 == 0)
-                {
-                    target = GameMain.galaxy.StarById((int)target / 100);
-                }
-                else
-                {
-                    target = GameMain.galaxy.PlanetById((int)target);
-                }
+                target = StarOrPlanetById((int)target);
             }
             if (target is PlanetData)
             {
@@ -203,14 +194,7 @@ namespace TelePotter
                 num--;
                 if (target is int)
                 {
-                    if ((int)target % 100 == 0)
-                    {
-                        target = GameMain.galaxy.StarById((int)target / 100);
-                    }
-                    else
-                    {
-                        target = GameMain.galaxy.PlanetById((int)target);
-                    }
+                    target = StarOrPlanetById((int)target);
                 }
                 if (target is PlanetData)
                 {
@@ -228,14 +212,7 @@ namespace TelePotter
         {
             if (target is int)
             {
-                if ((int)target % 100 == 0)
-                {
-                    target = GameMain.galaxy.StarById((int)target / 100);
-                }
-                else
-                {
-                    target = GameMain.galaxy.PlanetById((int)target);
-                }
+                target = StarOrPlanetById((int)target);
             }
             GameMain.mainPlayer.transform.localScale = Vector3.one;
             GameMain.mainPlayer.uVelocity = VectorLF3.zero;
