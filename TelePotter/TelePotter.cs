@@ -26,15 +26,18 @@ namespace TelePotter
             self = this;
             Logger = base.Logger;
             state = TelePotterState.idle;
-            string text_ = "天体方位指示";
-            if (Localization.strings.Exist(text_))
-            {
-                StringProto text = Localization.strings[text_];
-                text.ENUS = "Teleport";
-                text.ZHCN = "传送";
-                Dictionary<string, int> nameIndices = Traverse.Create(Localization.strings).Field("nameIndices").GetValue() as Dictionary<string, int>;
-                Localization.strings.dataArray[nameIndices[text_]] = text;
-            }
+            // string text_ = "天体方位指示";
+            // if (Localization.strings.Exist(text_))
+            // {
+            //    StringProto text = Localization.strings[text_];
+            //    text.ENUS = "Teleport";
+            //    text.ZHCN = "传送";
+            //    Dictionary<string, int> nameIndices = Traverse.Create(Localization.strings).Field("nameIndices").GetValue() as Dictionary<string, int>;
+            //    Localization.strings.dataArray[nameIndices[text_]] = text;
+            // }
+            GameObject func_text_3 = UIRoot.instance.uiGame.starmap.cursorFunctionGroup.transform.Find("func-3/func-text-3").gameObject;
+            func_text_3.GetComponent<Text>().text = (Localization.language == Language.zhCN) ? "传送" : "Teleport";
+            Destroy(func_text_3.GetComponent<Localizer>());
             teleportTip = Instantiate(UIRoot.instance.uiGame.generalTips.mechaMoveTip.flyTip, UIRoot.instance.uiGame.generalTips.mechaMoveTip.flyTip.transform.parent);
             teleportTip.name = "tp-tip";
             teleportTip.text = (Localization.language == Language.zhCN) ? "跨恒星传送请稍候" : "Please wait while the star is loading...";
