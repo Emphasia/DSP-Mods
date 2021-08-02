@@ -2,7 +2,7 @@
 
 This mod provides the ability to teleport to a target planet or star with two clicks on the star map.
 
-Select the target in the star map to open the menu, and then click the lower left button to transmit.
+Select the target in the star map to open the menu, and then click the lower left button to jump.
 
 ![guide](.\guide.jpg)
 
@@ -13,6 +13,11 @@ Select the target in the star map to open the menu, and then click the lower lef
 - **Teleporting across stars requires patiently waiting for few seconds**, so that the game can load the data of the target star.
 
 ## Changelog
+
+### v1.2.0
+
+-   Minor Update
+    Added related indications in the UI.
 
 ### v1.1.0
 
