@@ -8,7 +8,7 @@ using HarmonyLib;
 
 namespace TelePotter
 {
-    [BepInPlugin("emphasia.mod.dsp.TelePotter", "TelePotter", "1.2.0")]
+    [BepInPlugin("emphasia.mod.dsp.TelePotter", "TelePotter", "1.2.2")]
     public class TelePotter : BaseUnityPlugin
     {
         static TelePotter self;  // this
@@ -57,7 +57,11 @@ namespace TelePotter
             {
                 Logger.LogDebug("State : TASKING");
                 UIRoot.instance.uiGame.buildMenu.SetCurrentCategory(0);
-                GameMain.mainPlayer.movementState = EMovementState.Fly;
+                if (GameMain.mainPlayer.movementState < EMovementState.Fly)
+                {
+                    GameMain.mainPlayer.movementState = EMovementState.Fly;
+                    GameMain.mainPlayer.controller.actionWalk.SwitchToFly();
+                }
                 OpenPortal(target);
                 num = 5000;
                 teleportTip.gameObject.SetActive(true);
@@ -102,8 +106,8 @@ namespace TelePotter
             if (state == TelePotterState.arrived)
             {
                 Logger.LogInfo("State : ARRIVED");
-                //GameMain.mainPlayer.navigation.Arrive();
-                //GameMain.mainPlayer.movementState = EMovementState.Fly;
+                // GameMain.mainPlayer.navigation.Arrive();
+                // GameMain.mainPlayer.movementState = EMovementState.Fly;
                 OnArrive(target);
                 teleportTip.gameObject.SetActive(false);
                 state = TelePotterState.idle;
@@ -197,6 +201,7 @@ namespace TelePotter
             {
                 GameMain.mainPlayer.uPosition = (VectorLF3)target;
             }
+            GameMain.data.DetermineLocalPlanet();
             GameMain.data.DetermineRelative();
             yield break;
         }

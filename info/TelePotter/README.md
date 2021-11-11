@@ -6,23 +6,26 @@ Select the target in the star map to open the menu, and then click the lower lef
 
 ![guide](.\guide.jpg)
 
+
 ## Note
 
-- **This mod does not alter any entity or save anything to disk.** 
-  This mean the mod SHOULD be very safe to use and will not break your savegame, not even after an update.  
+- **This mod does not alter any entity or save anything to disk**, so this mod SHOULD be safe to use and will not break your savegame.  
 - **Teleporting across stars requires patiently waiting for few seconds**, so that the game can load the data of the target star.
+
 
 ## Changelog
 
+### v1.2.2
+
+-   Recompiled for Version 0.8.22.9331 to fix [error](https://github.com/Emphasia/DSP-Mods/issues/3).
+
 ### v1.2.0
 
--   Minor Update
-    Added related indications in the UI.
+-   Added related indications in the UI.
 
 ### v1.1.0
 
--   Minor Update
-    The drones of the Mecha will be teleported along with.
+-   The drones of the Mecha will be teleported along with.
 
 ### v1.0.0
 
