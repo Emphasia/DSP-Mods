@@ -36,75 +36,48 @@
       <Private>False</Private>
     </Reference>
     <ProjectReference>
-       <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\lib\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\lib\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\lib\BepInEx\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\lib\BepInEx.dll</HintPath>
+      <HintPath>..\lib\BepInEx\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx.Harmony">
-      <HintPath>..\lib\BepInEx.Harmony.dll</HintPath>
+      <HintPath>..\lib\BepInEx\BepInEx.Harmony.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx.Preloader">
-      <HintPath>..\lib\BepInEx.Preloader.dll</HintPath>
+      <HintPath>..\lib\BepInEx\BepInEx.Preloader.dll</HintPath>
     </Reference>
     <Reference Include="HarmonyXInterop">
-      <HintPath>..\lib\HarmonyXInterop.dll</HintPath>
+      <HintPath>..\lib\BepInEx\HarmonyXInterop.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\lib\game\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
-      <HintPath>..\lib\netstandard.dll</HintPath>
+      <HintPath>..\lib\game\netstandard.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Diagnostics.StackTrace">
-      <HintPath>..\lib\System.Diagnostics.StackTrace.dll</HintPath>
+    <Reference Include="System">
+      <HintPath>..\lib\game\System.dll</HintPath>
     </Reference>
-    <Reference Include="System.Globalization.Extensions">
-      <HintPath>..\lib\System.Globalization.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression">
-      <HintPath>..\lib\System.IO.Compression.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>..\lib\System.IO.Compression.FileSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http">
-      <HintPath>..\lib\System.Net.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization">
-      <HintPath>..\lib\System.Runtime.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization.Xml">
-      <HintPath>..\lib\System.Runtime.Serialization.Xml.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.XPath.XDocument">
-      <HintPath>..\lib\System.Xml.XPath.XDocument.dll</HintPath>
+    <Reference Include="System.Core">
+      <HintPath>..\lib\game\System.Core.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\lib\UnityEngine.dll</HintPath>
+      <HintPath>..\lib\game\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\UnityEngine.CoreModule.dll</HintPath>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\lib\game\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\lib\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\lib\game\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\lib\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\lib\game\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
