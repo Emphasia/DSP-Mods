@@ -8,11 +8,13 @@ using HarmonyLib;
 
 namespace TelePotter
 {
-    [BepInPlugin("emphasia.mod.dsp.TelePotter", "TelePotter", "1.2.2")]
+    [BepInPlugin("emphasia.mod.dsp.TelePotter", "TelePotter", "1.2.3")]
     public class TelePotter : BaseUnityPlugin
     {
         static TelePotter self;  // this
+#pragma warning disable 0108
         internal static BepInEx.Logging.ManualLogSource Logger;
+#pragma warning restore 0108
         public enum TelePotterState { idle, tasking, loading, ready, crossing, arrived, failed };
         public static TelePotterState state = TelePotterState.idle;
         public static int target = 0;

@@ -15,6 +15,10 @@ Select the target in the star map to open the menu, and then click the lower lef
 
 ## Changelog
 
+### v1.2.3
+
+-   Recompiled for Version 0.9.24.11286 to fix [error](https://github.com/Emphasia/DSP-Mods/issues/6).
+
 ### v1.2.2
 
 -   Recompiled for Version 0.8.22.9331 to fix [error](https://github.com/Emphasia/DSP-Mods/issues/3).
